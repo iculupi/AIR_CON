@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="FanController.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:FanController.ViewModels"
+    Title="Fan Controller"
+    BackgroundColor="#0F0F1A">
+
+    <ContentPage.BindingContext>
+        <vm:MainViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,16" Spacing="16">
+
+            <!-- ── Header ── -->
+            <Label
+                Text="🌀 Fan Controller"
+                FontSize="26"
+                FontAttributes="Bold"
+                TextColor="#00D4FF"
+                HorizontalOptions="Center" />
+
+            <!-- ── Status card ── -->
+            <Border
+                BackgroundColor="#16213E"
+                Stroke="#0F3460"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 14">
+                <VerticalStackLayout Padding="16,12" Spacing="4">
+                    <Label
+                        Text="Status połączenia"
+                        FontSize="12"
+                        TextColor="#8892A4" />
+                    <Label
+                        Text="{Binding StatusText}"
+                        FontSize="15"
+                        FontAttributes="Bold"
+                        TextColor="#FFFFFF"
+                        LineBreakMode="TailTruncation" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ── Connect / Disconnect ── -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Button
+                    Grid.Column="0"
+                    Text="{Binding ConnectButtonText}"
+                    Command="{Binding ConnectCommand}"
+                    BackgroundColor="#0F3460"
+                    TextColor="#00D4FF"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    HeightRequest="50" />
+
+                <Button
+                    Grid.Column="1"
+                    Text="✕"
+                    Command="{Binding DisconnectCommand}"
+                    BackgroundColor="#3D0000"
+                    TextColor="#FF4444"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    WidthRequest="50"
+                    HeightRequest="50" />
+            </Grid>
+
+            <!-- ── RPM display card ── -->
+            <Border
+                BackgroundColor="#16213E"
+                Stroke="#0F3460"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 14">
+                <VerticalStackLayout Padding="16,14" Spacing="2" HorizontalOptions="Center">
+                    <Label
+                        Text="Obroty wentylatora"
+                        FontSize="12"
+                        TextColor="#8892A4"
+                        HorizontalOptions="Center" />
+                    <HorizontalStackLayout Spacing="6" HorizontalOptions="Center">
+                        <Label
+                            Text="{Binding Rpm}"
+                            FontSize="52"
+                            FontAttributes="Bold"
+                            TextColor="#00D4FF"
+                            HorizontalOptions="Center" />
+                        <Label
+                            Text="RPM"
+                            FontSize="18"
+                            TextColor="#8892A4"
+                            VerticalOptions="End"
+                            Margin="0,0,0,8" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ── Power toggle card ── -->
+            <Border
+                BackgroundColor="#16213E"
+                Stroke="#0F3460"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 14">
+                <Grid Padding="16,14" ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="Zasilanie" FontSize="12" TextColor="#8892A4" />
+                        <Label
+                            Text="{Binding FanToggleText}"
+                            FontSize="17"
+                            FontAttributes="Bold"
+                            TextColor="{Binding FanToggleColor}" />
+                    </VerticalStackLayout>
+                    <Button
+                        Grid.Column="1"
+                        Text="{Binding FanToggleText}"
+                        Command="{Binding ToggleFanCommand}"
+                        BackgroundColor="{Binding FanToggleColor}"
+                        TextColor="#0F0F1A"
+                        FontAttributes="Bold"
+                        CornerRadius="10"
+                        WidthRequest="90"
+                        HeightRequest="42" />
+                </Grid>
+            </Border>
+
+            <!-- ── Speed slider card ── -->
+            <Border
+                BackgroundColor="#16213E"
+                Stroke="#0F3460"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 14">
+                <VerticalStackLayout Padding="16,14" Spacing="10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Grid.Column="0" Text="Prędkość" FontSize="12" TextColor="#8892A4" VerticalOptions="Center" />
+                        <HorizontalStackLayout Grid.Column="1" Spacing="4">
+                            <Label
+                                Text="{Binding FanSpeed, StringFormat='{0:F0}'}"
+                                FontSize="22"
+                                FontAttributes="Bold"
+                                TextColor="#00D4FF" />
+                            <Label Text="%" FontSize="14" TextColor="#8892A4" VerticalOptions="End" Margin="0,0,0,2" />
+                        </HorizontalStackLayout>
+                    </Grid>
+
+                    <Slider
+                        Minimum="1"
+                        Maximum="100"
+                        Value="{Binding FanSpeed}"
+                        ThumbColor="#00D4FF"
+                        MinimumTrackColor="#00D4FF"
+                        MaximumTrackColor="#2A2A4A" />
+
+                    <!-- Preset buttons -->
+                    <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+                        <Button
+                            Grid.Column="0"
+                            Text="25%"
+                            Command="{Binding SetPresetCommand}"
+                            CommandParameter="25"
+                            BackgroundColor="#1A2A4A"
+                            TextColor="#8892A4"
+                            FontSize="13"
+                            CornerRadius="8"
+                            HeightRequest="36" />
+                        <Button
+                            Grid.Column="1"
+                            Text="50%"
+                            Command="{Binding SetPresetCommand}"
+                            CommandParameter="50"
+                            BackgroundColor="#1A2A4A"
+                            TextColor="#8892A4"
+                            FontSize="13"
+                            CornerRadius="8"
+                            HeightRequest="36" />
+                        <Button
+                            Grid.Column="2"
+                            Text="75%"
+                            Command="{Binding SetPresetCommand}"
+                            CommandParameter="75"
+                            BackgroundColor="#1A2A4A"
+                            TextColor="#8892A4"
+                            FontSize="13"
+                            CornerRadius="8"
+                            HeightRequest="36" />
+                        <Button
+                            Grid.Column="3"
+                            Text="100%"
+                            Command="{Binding SetPresetCommand}"
+                            CommandParameter="100"
+                            BackgroundColor="#1A2A4A"
+                            TextColor="#00D4FF"
+                            FontSize="13"
+                            FontAttributes="Bold"
+                            CornerRadius="8"
+                            HeightRequest="36" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ── Info footer ── -->
+            <Label
+                Text="Urządzenie: Fan Controller ESP32C3 | BLE"
+                FontSize="11"
+                TextColor="#4A5568"
+                HorizontalOptions="Center"
+                Margin="0,4,0,0" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

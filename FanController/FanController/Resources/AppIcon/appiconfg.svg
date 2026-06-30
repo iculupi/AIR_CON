@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">
+  <!-- Fan hub -->
+  <circle cx="54" cy="54" r="7" fill="#00D4FF"/>
+  <!-- Blade top -->
+  <path d="M54 14 C62 14 72 24 70 42 C65 36 58 32 54 32 C50 32 43 36 38 42 C36 24 46 14 54 14Z" fill="#00D4FF" opacity="0.9"/>
+  <!-- Blade bottom-right -->
+  <path d="M87 72 C83 79 70 83 54 76 C58 70 60 63 58 58 C56 53 51 48 46 46 C58 38 88 53 87 72Z" fill="#00D4FF" opacity="0.9"/>
+  <!-- Blade bottom-left -->
+  <path d="M21 72 C17 53 47 38 59 46 C54 48 49 53 47 58 C45 63 47 70 51 76 C35 83 22 79 21 72Z" fill="#00D4FF" opacity="0.9"/>
+  <!-- Center dot -->
+  <circle cx="54" cy="54" r="4" fill="#1A1A2E"/>
+</svg>

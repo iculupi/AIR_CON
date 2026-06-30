@@ -4,12 +4,9 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:FanController.ViewModels"
+    x:DataType="vm:MainViewModel"
     Title="Fan Controller"
     BackgroundColor="#0F0F1A">
-
-    <ContentPage.BindingContext>
-        <vm:MainViewModel />
-    </ContentPage.BindingContext>
 
     <ScrollView>
         <VerticalStackLayout Padding="20,16" Spacing="16">

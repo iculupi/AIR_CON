@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <!-- MAUI -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.*" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="9.*-*" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.*-*" />
 

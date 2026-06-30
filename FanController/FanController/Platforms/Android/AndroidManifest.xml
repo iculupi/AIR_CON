@@ -27,19 +27,6 @@
         android:roundIcon="@mipmap/appicon_round"
         android:supportsRtl="true"
         android:label="Fan Controller">
-
-        <activity
-            android:name="com.microsoft.maui.MainActivity"
-            android:configChanges="orientation|screenSize|uiMode|screenLayout|smallestScreenSize|density|keyboard|keyboardHidden|navigation"
-            android:exported="true"
-            android:launchMode="singleTop"
-            android:theme="@style/Maui.SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
     </application>
 
 </manifest>

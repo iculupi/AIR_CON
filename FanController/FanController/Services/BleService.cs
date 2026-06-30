@@ -12,12 +12,13 @@ public class BleService : IAsyncDisposable
     private const string RpmCharUuid    = "beb5483e-36e1-4688-b7f5-ea07361b26a9";
     private const string DeviceName     = "Fan Controller ESP32C3";
 
-    private readonly IBluetoothLE _ble;
-    private readonly IAdapter _adapter;
+    private IBluetoothLE? _ble;
+    private IAdapter? _adapter;
     private IDevice? _device;
     private ICharacteristic? _speedChar;
     private ICharacteristic? _rpmChar;
     private CancellationTokenSource? _scanCts;
+    private bool _bleInitialized;
 
     public event EventHandler<byte>? SpeedReceived;
     public event EventHandler<ushort>? RpmReceived;
@@ -25,24 +26,42 @@ public class BleService : IAsyncDisposable
     public event EventHandler<string>? StatusChanged;
 
     public bool IsConnected => _device?.State == DeviceState.Connected;
-    public bool IsScanning  => _adapter.IsScanning;
+    public bool IsScanning  => _adapter?.IsScanning ?? false;
 
-    public BleService()
+    public BleService() { }
+
+    private bool EnsureInitialized()
     {
-        _ble     = CrossBluetoothLE.Current;
-        _adapter = CrossBluetoothLE.Current.Adapter;
+        if (_bleInitialized) return _adapter is not null;
 
-        _adapter.ScanTimeout         = 12_000;
-        _adapter.DeviceDiscovered   += OnDeviceDiscovered;
-        _adapter.DeviceConnected    += OnDeviceConnected;
-        _adapter.DeviceDisconnected += OnDeviceDisconnected;
-        _adapter.DeviceConnectionLost += OnDeviceConnectionLost;
+        _bleInitialized = true;
+        try
+        {
+            _ble     = CrossBluetoothLE.Current;
+            _adapter = CrossBluetoothLE.Current.Adapter;
+
+            _adapter.ScanTimeout            = 12_000;
+            _adapter.DeviceDiscovered      += OnDeviceDiscovered;
+            _adapter.DeviceConnected       += OnDeviceConnected;
+            _adapter.DeviceDisconnected    += OnDeviceDisconnected;
+            _adapter.DeviceConnectionLost  += OnDeviceConnectionLost;
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            StatusChanged?.Invoke(this, $"Błąd inicjalizacji BLE: {ex.Message}");
+            return false;
+        }
     }
 
     // ── Public API ──────────────────────────────────────────────────────────
 
     public async Task ScanAndConnectAsync(CancellationToken externalCt = default)
     {
+        if (!EnsureInitialized() || _ble is null || _adapter is null)
+            throw new InvalidOperationException("Bluetooth niedostępny na tym urządzeniu.");
+
         if (_ble.State != BluetoothState.On)
             throw new InvalidOperationException("Bluetooth jest wyłączony. Włącz BT i spróbuj ponownie.");
 
@@ -62,7 +81,7 @@ public class BleService : IAsyncDisposable
     public async Task StopScanAsync()
     {
         _scanCts?.Cancel();
-        if (_adapter.IsScanning)
+        if (_adapter is not null && _adapter.IsScanning)
             await _adapter.StopScanningForDevicesAsync();
     }
 
@@ -84,7 +103,7 @@ public class BleService : IAsyncDisposable
     {
         if (_device != null)
         {
-            try { await _adapter.DisconnectDeviceAsync(_device); }
+            try { await _adapter!.DisconnectDeviceAsync(_device); }
             catch { /* ignoruj błąd rozłączania */ }
         }
     }
@@ -101,7 +120,7 @@ public class BleService : IAsyncDisposable
 
         try
         {
-            await _adapter.ConnectToDeviceAsync(e.Device);
+            await _adapter!.ConnectToDeviceAsync(e.Device);
         }
         catch (Exception ex)
         {
@@ -203,10 +222,13 @@ public class BleService : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         await DisconnectAsync();
-        _adapter.DeviceDiscovered       -= OnDeviceDiscovered;
-        _adapter.DeviceConnected        -= OnDeviceConnected;
-        _adapter.DeviceDisconnected     -= OnDeviceDisconnected;
-        _adapter.DeviceConnectionLost   -= OnDeviceConnectionLost;
+        if (_adapter is not null)
+        {
+            _adapter.DeviceDiscovered       -= OnDeviceDiscovered;
+            _adapter.DeviceConnected        -= OnDeviceConnected;
+            _adapter.DeviceDisconnected     -= OnDeviceDisconnected;
+            _adapter.DeviceConnectionLost   -= OnDeviceConnectionLost;
+        }
         _scanCts?.Dispose();
     }
 }

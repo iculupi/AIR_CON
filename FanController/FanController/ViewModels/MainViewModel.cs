@@ -60,6 +60,12 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanConnect))]
     private async Task ConnectAsync()
     {
+        if (!await RequestBlePermissionsAsync())
+        {
+            StatusText = "Brak uprawnień Bluetooth – przyznaj je w ustawieniach";
+            return;
+        }
+
         IsScanning = true;
         try
         {
@@ -72,6 +78,24 @@ public partial class MainViewModel : ObservableObject
         finally
         {
             IsScanning = false;
+        }
+    }
+
+    private static async Task<bool> RequestBlePermissionsAsync()
+    {
+        if (DeviceInfo.Platform != DevicePlatform.Android)
+            return true;
+
+        if (DeviceInfo.Version.Major >= 12)
+        {
+            var scan    = await Permissions.RequestAsync<Permissions.Bluetooth>();
+            var connect = await Permissions.CheckStatusAsync<Permissions.Bluetooth>();
+            return scan == PermissionStatus.Granted && connect == PermissionStatus.Granted;
+        }
+        else
+        {
+            var loc = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+            return loc == PermissionStatus.Granted;
         }
     }
 
